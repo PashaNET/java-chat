@@ -82,7 +82,20 @@ function onTypingStart(event) {
 
     stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
   }
-  event.preventDefault();
+  //   event.preventDefault();
+}
+
+function onTypingStop(event) {
+  if (stompClient) {
+    const chatMessage = {
+      sender: username,
+      content: "",
+      type: "TYPING_STOP"
+    };
+
+    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+  }
+  //   event.preventDefault();
 }
 
 function onMessageReceived(payload) {
@@ -93,17 +106,17 @@ function onMessageReceived(payload) {
   if (message.type === "JOIN") {
     messageElement.classList.add("event-message");
     message.content = message.sender + " joined!";
+    addMessage(messageElement, message);
   } else if (message.type === "LEAVE") {
     messageElement.classList.add("event-message");
     message.content = message.sender + " left!";
+    addMessage(messageElement, message);
   } else if (message.type === "TYPING") {
-    // alert("Someone touching keyboard");
     notification.innerHTML = message.content;
-    return;
   } else if (message.type === "TYPING_STOP") {
-    // alert("Someone touching keyboard");
-    notification.innerHTML = "";
-    return;
+    setTimeout(() => {
+      notification.innerHTML = "";
+    }, 500);
   } else {
     messageElement.classList.add("chat-message");
 
@@ -117,9 +130,13 @@ function onMessageReceived(payload) {
     var usernameElement = document.createElement("span");
     var usernameText = document.createTextNode(message.sender);
     usernameElement.appendChild(usernameText);
+    messageElement.app;
     messageElement.appendChild(usernameElement);
+    addMessage(messageElement, message);
   }
+}
 
+function addMessage(messageElement, message) {
   var textElement = document.createElement("p");
   var messageText = document.createTextNode(message.content);
   textElement.appendChild(messageText);
@@ -141,4 +158,5 @@ function getAvatarColor(messageSender) {
 
 usernameForm.addEventListener("submit", connect, true);
 messageInput.addEventListener("keydown", onTypingStart, true);
+messageInput.addEventListener("keyup", onTypingStop, true);
 messageForm.addEventListener("submit", sendMessage, true);

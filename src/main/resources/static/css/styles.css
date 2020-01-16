@@ -33,6 +33,12 @@ body:before {
   z-index: 0;
 }
 
+#notification {
+  position: absolute;
+  bottom: 50px;
+  left: 20px;
+}
+
 .clearfix:after {
   display: block;
   content: "";
