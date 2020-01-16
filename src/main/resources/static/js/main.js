@@ -112,11 +112,15 @@ function onMessageReceived(payload) {
     message.content = message.sender + " left!";
     addMessage(messageElement, message);
   } else if (message.type === "TYPING") {
-    notification.innerHTML = message.content;
+    if (message.sender !== username) {
+      notification.innerHTML = message.content;
+    }
   } else if (message.type === "TYPING_STOP") {
-    setTimeout(() => {
-      notification.innerHTML = "";
-    }, 500);
+    if (message.sender !== username) {
+      setTimeout(() => {
+        notification.innerHTML = "";
+      }, 500);
+    }
   } else {
     messageElement.classList.add("chat-message");
 
