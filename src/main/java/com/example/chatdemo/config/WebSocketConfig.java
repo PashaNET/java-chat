@@ -18,7 +18,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.setApplicationDestinationPrefixes("/app");
         registry.enableSimpleBroker("/topic");
 
-        // RabbitMQ
+        // RabbitMQ - can be used instead of default implemented behavior
         // registry.setApplicationDestinationPrefixes("/app");
 
         // // Use this for enabling a Full featured broker like RabbitMQ
