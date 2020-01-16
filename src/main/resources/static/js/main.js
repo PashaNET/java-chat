@@ -1,17 +1,18 @@
-"use strict";
+// "use strict";
 
-var usernamePage = document.querySelector("#username-page");
-var chatPage = document.querySelector("#chat-page");
-var usernameForm = document.querySelector("#usernameForm");
-var messageForm = document.querySelector("#message-form");
-var messageInput = document.querySelector("#message");
-var messageArea = document.querySelector("#message-area");
-var connectingElement = document.querySelector(".connecting");
+const usernamePage = document.querySelector("#username-page");
+const chatPage = document.querySelector("#chat-page");
+const usernameForm = document.querySelector("#usernameForm");
+const messageForm = document.querySelector("#message-form");
+const messageInput = document.querySelector("#message");
+const notification = document.querySelector("#notification");
+const messageArea = document.querySelector("#message-area");
+const connectingElement = document.querySelector(".connecting");
 
 var stompClient = null;
 var username = null;
 
-var colors = [
+const colors = [
   "#2196F3",
   "#32c787",
   "#00BCD4",
@@ -71,6 +72,19 @@ function sendMessage(event) {
   event.preventDefault();
 }
 
+function onTypingStart(event) {
+  if (stompClient) {
+    const chatMessage = {
+      sender: username,
+      content: username + " is touching keyboard",
+      type: "TYPING"
+    };
+
+    stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
+  }
+  event.preventDefault();
+}
+
 function onMessageReceived(payload) {
   var message = JSON.parse(payload.body);
 
@@ -82,6 +96,14 @@ function onMessageReceived(payload) {
   } else if (message.type === "LEAVE") {
     messageElement.classList.add("event-message");
     message.content = message.sender + " left!";
+  } else if (message.type === "TYPING") {
+    // alert("Someone touching keyboard");
+    notification.innerHTML = message.content;
+    return;
+  } else if (message.type === "TYPING_STOP") {
+    // alert("Someone touching keyboard");
+    notification.innerHTML = "";
+    return;
   } else {
     messageElement.classList.add("chat-message");
 
@@ -118,4 +140,5 @@ function getAvatarColor(messageSender) {
 }
 
 usernameForm.addEventListener("submit", connect, true);
+messageInput.addEventListener("keydown", onTypingStart, true);
 messageForm.addEventListener("submit", sendMessage, true);
